@@ -77,16 +77,16 @@ void render() {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pixelsDataFBO);
     }
 
-    DEBUG_LEVEL = 1;
+    DEBUG_LEVEL = WARN;
     RayResult result = RAY_CASTER::castRayFromCam(30);
-    DEBUG_LEVEL = 3;
-    glUniform3f(glGetUniformLocation(lowResProgram, "trueOrigin"), cameraPos.x,cameraPos.y,cameraPos.z);
-    glUniform3f(glGetUniformLocation(lowResProgram, "cameraDir"), cameraDir.x,cameraDir.y,cameraDir.z);
+    DEBUG_LEVEL = DEBUG;
+    glUniform3f(glGetUniformLocation(lowResProgram, "trueOrigin"), cameraPos.x, cameraPos.y, cameraPos.z);
+    glUniform3f(glGetUniformLocation(lowResProgram, "cameraDir"), cameraDir.x, cameraDir.y, cameraDir.z);
     glUniform2f(glGetUniformLocation(lowResProgram, "mousePos"), mouse.x, mouse.y);
     glUniform1ui(glGetUniformLocation(lowResProgram, "originMortonPos"), getMortonPos(cameraPos));
     glUniform1i(glGetUniformLocation(lowResProgram, "renderPosData"), sendDebugFrame);
     glUniform3f(glGetUniformLocation(lowResProgram, "sunDir"), sun.x, sun.y, sun.z);
-    glUniform3i(glGetUniformLocation(lowResProgram, "lookingAtBlock"),result.pos.x,result.pos.y,result.pos.z);
+    glUniform3i(glGetUniformLocation(lowResProgram, "lookingAtBlock"),result.pos.x, result.pos.y, result.pos.z);
     glUniform1f(glGetUniformLocation(lowResProgram, "deltaTime"), (float)glfwGetTime());
 
     if (dimensionsChanged) {
@@ -105,31 +105,31 @@ void render() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    DEBUG(3) checkGlError(lowResProgram,"glDrawArrays1");
+    DEBUG(DEBUG) checkGlError(lowResProgram,"glDrawArrays1");
     return;
 
     
-    glUseProgram(lightScatteringProgram);
+    // glUseProgram(lightScatteringProgram);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    if (dimensionsChanged) {
-        glUniform2ui(glGetUniformLocation(lightScatteringProgram, "resolution"), width, height);
-        dimensionsChanged = false;
-    }
+    // if (dimensionsChanged) {
+    //     glUniform2ui(glGetUniformLocation(lightScatteringProgram, "resolution"), width, height);
+    //     dimensionsChanged = false;
+    // }
 
-    glUniform3f(glGetUniformLocation(lightScatteringProgram, "origin"), cameraPos.x,cameraPos.y,cameraPos.z);
+    // glUniform3f(glGetUniformLocation(lightScatteringProgram, "origin"), cameraPos.x,cameraPos.y,cameraPos.z);
 
 
-    glBindTexture(GL_TEXTURE_2D, colorBufferTex);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, posTex);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, normalTex);
-    glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, colorBufferTex);
+    // glActiveTexture(GL_TEXTURE1);
+    // glBindTexture(GL_TEXTURE_2D, posTex);
+    // glActiveTexture(GL_TEXTURE2);
+    // glBindTexture(GL_TEXTURE_2D, normalTex);
+    // glActiveTexture(GL_TEXTURE0);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    DEBUG(3) checkGlError(lightScatteringProgram,"glDrawArrays2");
+    // glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    // DEBUG(DEBUG) checkGlError(lightScatteringProgram, "glDrawArrays2");
 
     // glUseProgram(midResProgram);
 
@@ -190,18 +190,18 @@ int main() {
     genWorld();
     DEBUG_LEVEL = 3;
 
-    printf("generated chunk! time: %lf  \n",glfwGetTime()-start);
+    printf("generated chunk! time: %lf  \n", glfwGetTime() - start);
 
     cameraDir = glm::normalize(cameraDir);
 
-    glfwSetKeyCallback(window,glfwCharCallback);
-    glfwSetCursorPosCallback(window,glfwMousePosCallback);
+    glfwSetKeyCallback(window, glfwCharCallback);
+    glfwSetCursorPosCallback(window, glfwMousePosCallback);
     glfwSetMouseButtonCallback(window, glfwMouseButtonCallback);
     glfwSetScrollCallback(window, glfwScrollCallback);
 
     glfwSwapInterval(1);
 
-    const int averageSize = 40;
+    const int averageSize = 100;
     double times[averageSize]{};
     int i = 0;
 
@@ -222,7 +222,14 @@ int main() {
         i %= averageSize;
         double out = 0;
         for (int n = 0; n < averageSize && times[n]; n++) out += times[n];
-        printf("\rrender time: %dms (%d fps) rotationXY: %lf, %lf camPos: %lf, %lf, %lf    ",(int)(out/(double)averageSize*1000),(int)(1000.0/(double)((out/(double)averageSize) * 1000)),rotationY,rotationX,cameraPos.x,cameraPos.y,cameraPos.z);
+        printf("\rrender time: %dms (%d fps) rotationXY: %lf, %lf camPos: %lf, %lf, %lf    ",
+                (int)(out/(double)averageSize*1000),
+                (int)(1000.0/(double)((out/(double)averageSize) * 1000)),
+                rotationY,
+                rotationX,
+                cameraPos.x,
+                cameraPos.y,
+                cameraPos.z);
 
     }
 

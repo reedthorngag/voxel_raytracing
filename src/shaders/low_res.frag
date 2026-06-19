@@ -47,9 +47,9 @@ struct Ray {
 
     ivec3 sign;
 
-    dvec3 ratiosX;
-    dvec3 ratiosY;
-    dvec3 ratiosZ;
+    vec3 ratiosX;
+    vec3 ratiosY;
+    vec3 ratiosZ;
 
     mat3 ratios;
 
@@ -72,17 +72,17 @@ Ray buildRay(vec3 dir) {
     if (dir.z < 0)
         ray.step.z = -1;
 
-    ray.ratiosX = dvec3(
+    ray.ratiosX = vec3(
         1,
         dir.y/dir.x,
         dir.z/dir.x
     );
-    ray.ratiosY = dvec3(
+    ray.ratiosY = vec3(
         dir.x/dir.y,
         1,
         dir.z/dir.y
     );
-    ray.ratiosZ = dvec3(
+    ray.ratiosZ = vec3(
         dir.x/dir.z,
         dir.y/dir.z,
         1
@@ -222,8 +222,11 @@ void refractRay(float newRefractIndex, uint flags) {
     vec3 normal = vec3(0);
     normal[lastHit] = ray.step[lastHit];
 
+    // water
     if ((flags & 0x10) > 0) {
-        normal.x += sin((deltaTime + pos.exact.x*0.2 - pos.exact.z * 0.1)*10)*0.2;
+        normal.x += sin((deltaTime*0.75 + pos.exact.x*0.2 + pos.exact.z*0.08)*10)*0.2;
+        normal.x += sin(deltaTime*0.75 + pos.exact.x)*0.1;
+        //normal.y += sin(pos.exact.x*0.1);
 
         normal = normalize(normal);
     }
@@ -309,11 +312,13 @@ void main() {
     uint i = 0;
     const uint numSteps = 300;
 
+    // get first hit
     while (block.x == -1 && i++ < numSteps) {
         nextIntersectDDA();
         getBlock();
     }
 
+    // continue ray path with handling for reflections and refractions
     while (i++ < numSteps) {
 
         if (block.x != -1) {

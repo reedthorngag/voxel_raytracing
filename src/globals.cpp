@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include "globals.hpp"
 
-int DEBUG_LEVEL = 3;
+int DEBUG_LEVEL = DEBUG;
 
 int width;
 int height;

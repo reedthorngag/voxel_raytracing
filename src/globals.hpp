@@ -7,6 +7,11 @@
 #ifndef _GLOBALS
 #define _GLOBALS
 
+#define ERROR 0
+#define WARN 1
+#define INFO 2
+#define DEBUG 3
+
 extern int DEBUG_LEVEL;
 
 #define DEBUG(x) if (x <= DEBUG_LEVEL) 
